@@ -9,7 +9,7 @@ import RxRealm
 
 //realm model
 class Lap: Object {
-    dynamic var time: NSTimeInterval = NSDate().timeIntervalSinceReferenceDate
+    dynamic var time: TimeInterval = NSDate().timeIntervalSinceReferenceDate
 }
 
 //view controller
@@ -27,31 +27,31 @@ class ViewController: UIViewController {
         /*
          Observable<Results<Lap>> - wrap Results as observable
          */
-        realm.objects(Lap).asObservable()
+        realm.objects(Lap.self).asObservable()
             .map {laps in "\(laps.count) laps"}
-            .subscribeNext {[unowned self]text in
+            .subscribe(onNext: {[unowned self]text in
                 self.title = text
-            }
+            })
             .addDisposableTo(bag)
         
         /* 
          Observable<Array<Lap>> - convert Results to Array and wrap as observable
          */
-        realm.objects(Lap).sorted("time", ascending: false).asObservableArray()
+        realm.objects(Lap.self).sorted(byProperty: "time", ascending: false).asObservableArray()
             .map {array in array.prefix(5) }
-            .bindTo(tableView.rx_itemsWithCellIdentifier("Cell", cellType: UITableViewCell.self)) {row, element, cell in
-                cell.textLabel!.text = formatter.stringFromDate(NSDate(timeIntervalSinceReferenceDate: element.time))
+            .bindTo(tableView.rx.items(cellIdentifier: "Cell", cellType: UITableViewCell.self)) {row, element, cell in
+                cell.textLabel!.text = formatter.string(from: Date(timeIntervalSinceReferenceDate: element.time) as Date)
             }.addDisposableTo(bag)
 
         /*
          Use bindable sinks to add objects
          */
-        addOneItemButton.rx_tap
+        addOneItemButton.rx.tap
             .map { Lap() }
             .bindTo(Realm.rx_add())
             .addDisposableTo(bag)
         
-        addTwoItemsButton.rx_tap
+        addTwoItemsButton.rx.tap
             .map { [Lap(), Lap()] }
             .bindTo(Realm.rx_add())
             .addDisposableTo(bag)

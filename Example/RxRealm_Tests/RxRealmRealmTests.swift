@@ -1,3 +1,5 @@
+
+
 //
 //  RxRealmRealmTests.swift
 //  RxRealm
@@ -21,28 +23,28 @@ class RxRealmRealmTests: XCTestCase {
     }
     
     func testRealmDidChangeNotifications() {
-        let expectation1 = expectationWithDescription("Realm notification")
+        let expectation1 = expectation(description: "Realm notification")
         
-        let realm = realmInMemory(#function)
+        let realm = realmInMemory(name: #function)
         let bag = DisposeBag()
         
         let scheduler = TestScheduler(initialClock: 0)
-        let observer = scheduler.createObserver((Realm, Notification))
+        let observer = scheduler.createObserver((Realm, Notification).self)
         
         let realm$ = realm.asObservable().shareReplay(1)
         realm$.scan(0, accumulator: {acc, _ in return acc+1})
-            .filter { $0 == 2 }.map {_ in ()}.subscribeNext(expectation1.fulfill).addDisposableTo(bag)
+            .filter { $0 == 2 }.map {_ in ()}.subscribe(onNext: expectation1.fulfill).addDisposableTo(bag)
         realm$
             .subscribe(observer).addDisposableTo(bag)
         
         //interact with Realm here
-        delay(0.1) {
+        delay(delay: 0.1) {
             try! realm.write {
                 realm.add(Message("first"))
             }
         }
-        delayInBackground(0.3) {[unowned self] in
-            let realm = self.realmInMemory(#function)
+        delayInBackground(delay: 0.3) {[unowned self] in
+            let realm = self.realmInMemory(name: #function)
             try! realm.write {
                 realm.add(Message("second"))
             }
@@ -50,34 +52,34 @@ class RxRealmRealmTests: XCTestCase {
         
         scheduler.start()
         
-        waitForExpectationsWithTimeout(0.5) {error in
+        waitForExpectations(timeout: 0.5) {error in
             XCTAssertTrue(error == nil)
             XCTAssertEqual(observer.events.count, 2)
-            XCTAssertEqual(observer.events[0].value.element!.1, Notification.DidChange)
-            XCTAssertEqual(observer.events[1].value.element!.1, Notification.DidChange)
+            XCTAssertEqual(observer.events[0].value.element!.1, Notification.didChange)
+            XCTAssertEqual(observer.events[1].value.element!.1, Notification.didChange)
         }
     }
     
     func testRealmRefreshRequiredNotifications() {
-        let expectation1 = expectationWithDescription("Realm notification")
+        let expectation1 = expectation(description: "Realm notification")
         
-        let realm = realmInMemory(#function)
+        let realm = realmInMemory(name: #function)
         realm.autorefresh = false
         
         let bag = DisposeBag()
         
         let scheduler = TestScheduler(initialClock: 0)
-        let observer = scheduler.createObserver((Realm, Notification))
+        let observer = scheduler.createObserver((Realm, Notification).self)
         
         let realm$ = realm.asObservable().shareReplay(1)
         realm$.scan(0, accumulator: {acc, _ in return acc+1})
-            .filter { $0 == 1 }.map {_ in ()}.subscribeNext(expectation1.fulfill).addDisposableTo(bag)
+            .filter { $0 == 1 }.map {_ in ()}.subscribe(onNext: expectation1.fulfill).addDisposableTo(bag)
         realm$
             .subscribe(observer).addDisposableTo(bag)
         
         //interact with Realm here from background
-        delayInBackground(0.1) {[unowned self] in
-            let realm = self.realmInMemory(#function)
+        delayInBackground(delay: 0.1) {[unowned self] in
+            let realm = self.realmInMemory(name: #function)
             try! realm.write {
                 realm.add(Message("second"))
             }
@@ -85,10 +87,10 @@ class RxRealmRealmTests: XCTestCase {
         
         scheduler.start()
         
-        waitForExpectationsWithTimeout(0.5) {error in
+        waitForExpectations(timeout: 0.5) {error in
             XCTAssertTrue(error == nil)
             XCTAssertEqual(observer.events.count, 1)
-            XCTAssertEqual(observer.events[0].value.element!.1, Notification.RefreshRequired)
+            XCTAssertEqual(observer.events[0].value.element!.1, Notification.refreshRequired)
         }
     }
 

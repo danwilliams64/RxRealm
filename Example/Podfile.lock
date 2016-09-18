@@ -1,0 +1,37 @@
+PODS:
+  - Realm (1.1.0):
+    - Realm/Headers (= 1.1.0)
+  - Realm/Headers (1.1.0)
+  - RealmSwift (1.1.0):
+    - Realm (= 1.1.0)
+  - RxCocoa (3.0.0-beta.1):
+    - RxSwift (~> 3.0.0-beta.1)
+  - RxRealm (0.1.7):
+    - RealmSwift (~> 1.1.0)
+    - RxSwift
+  - RxSwift (3.0.0-beta.1)
+  - RxTests (3.0.0-beta.1):
+    - RxSwift (~> 3.0.0-beta.1)
+
+DEPENDENCIES:
+  - RealmSwift (~> 1.1.0)
+  - RxCocoa (~> 3.0.0-beta.1)
+  - RxRealm (from `~/source/oss/RxRealm`)
+  - RxSwift (~> 3.0.0-beta.1)
+  - RxTests (~> 3.0.0-beta.1)
+
+EXTERNAL SOURCES:
+  RxRealm:
+    :path: "~/source/oss/RxRealm"
+
+SPEC CHECKSUMS:
+  Realm: ceecf1a4540c4ce9efe196fe73fa9855bce05bd8
+  RealmSwift: 838058b2db95b12cb86bd0cf209df642c33fb60a
+  RxCocoa: 8cecf331302b8ae5381bbab1bccba4ede2eae6a8
+  RxRealm: 56f6bc8225a66d51b611c71a0b19034aa02f2f8d
+  RxSwift: 0823e8d7969c23bfa9ddfb2afa4881e424a1a710
+  RxTests: 819cbca750007349f03cfdb89bc07d412f67ab96
+
+PODFILE CHECKSUM: e287646ba9e960a8bf646cf101782fc6d0017d73
+
+COCOAPODS: 1.0.1

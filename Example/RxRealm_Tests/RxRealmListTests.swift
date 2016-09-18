@@ -36,14 +36,14 @@ class RxRealmListTests: XCTestCase {
     }
     
     func testListType() {
-        let expectation1 = expectationWithDescription("List<User> first")
+        let expectation1 = expectation(description: "List<User> first")
         
-        let realm = realmInMemory(#function)
-        clearRealm(realm)
+        let realm = realmInMemory(name: #function)
+        clearRealm(realm: realm)
         let bag = DisposeBag()
         
         let scheduler = TestScheduler(initialClock: 0)
-        let observer = scheduler.createObserver(List<User>)
+        let observer = scheduler.createObserver(List<User>.self)
         
         let message = Message("first")
         try! realm.write {
@@ -52,17 +52,17 @@ class RxRealmListTests: XCTestCase {
         
         let users$ = message.recipients.asObservable().shareReplay(1)
         users$.scan(0, accumulator: {acc, _ in return acc+1})
-            .filter { $0 == 3 }.map {_ in ()}.subscribeNext(expectation1.fulfill).addDisposableTo(bag)
+            .filter { $0 == 3 }.map {_ in ()}.subscribe(onNext: expectation1.fulfill).addDisposableTo(bag)
         users$
             .subscribe(observer).addDisposableTo(bag)
         
         //interact with Realm here
-        delay(0.1) {
+        delay(delay: 0.1) {
             try! realm.write {
                 message.recipients.append(User("user1"))
             }
         }
-        delay(0.2) {
+        delay(delay: 0.2) {
             try! realm.write {
                 message.recipients.removeAtIndex(0)
             }
@@ -70,7 +70,7 @@ class RxRealmListTests: XCTestCase {
         
         scheduler.start()
         
-        waitForExpectationsWithTimeout(0.5) {error in
+        waitForExpectations(timeout: 0.5) {error in
             //do tests here
             
             XCTAssertTrue(error == nil)
@@ -80,14 +80,14 @@ class RxRealmListTests: XCTestCase {
     }
     
     func testLustTypeChangeset() {
-        let expectation1 = expectationWithDescription("List<User> first")
+        let expectation1 = expectation(description: "List<User> first")
         
-        let realm = realmInMemory(#function)
-        clearRealm(realm)
+        let realm = realmInMemory(name: #function)
+        clearRealm(realm: realm)
         let bag = DisposeBag()
         
         let scheduler = TestScheduler(initialClock: 0)
-        let observer = scheduler.createObserver(String)
+        let observer = scheduler.createObserver(String.self)
         
         let message = Message("first")
         try! realm.write {
@@ -96,7 +96,7 @@ class RxRealmListTests: XCTestCase {
         
         let users$ = message.recipients.asObservableChangeset().shareReplay(1)
         users$.scan(0, accumulator: {acc, _ in return acc+1})
-            .filter { $0 == 3 }.map {_ in ()}.subscribeNext(expectation1.fulfill).addDisposableTo(bag)
+            .filter { $0 == 3 }.map {_ in ()}.subscribe(onNext: expectation1.fulfill).addDisposableTo(bag)
         users$
             .map {list, changes in
                 if let changes = changes {
@@ -108,12 +108,12 @@ class RxRealmListTests: XCTestCase {
             .subscribe(observer).addDisposableTo(bag)
         
         //interact with Realm here
-        delay(0.1) {
+        delay(delay: 0.1) {
             try! realm.write {
                 message.recipients.append(User("user1"))
             }
         }
-        delay(0.2) {
+        delay(delay: 0.2) {
             try! realm.write {
                 message.recipients.removeAtIndex(0)
             }
@@ -121,7 +121,7 @@ class RxRealmListTests: XCTestCase {
         
         scheduler.start()
         
-        waitForExpectationsWithTimeout(0.5) {error in
+        waitForExpectations(timeout: 0.5) {error in
             //do tests here
             
             XCTAssertTrue(error == nil)
