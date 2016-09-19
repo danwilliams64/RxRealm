@@ -160,9 +160,9 @@ public extension Realm {
      
      - returns: `Observable<(Realm, Notification)>`, which you can subscribe to.
      */
-    public func asObservable() -> Observable<(Realm, RealmSwift.Notification)> {
+    public func asObservable() -> Observable<(Realm, Realm.Notification)> {
         return Observable.create {observer in
-            let token = self.addNotificationBlock {(notification: RealmSwift.Notification, realm: Realm) in
+            let token = self.addNotificationBlock {(notification: Realm.Notification, realm: Realm) in
                 observer.onNext(realm, notification)
             }
             
